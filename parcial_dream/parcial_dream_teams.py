@@ -384,6 +384,7 @@ def generar_bonus_csv(nombre_archivo:str, listado:list):
     :param listado: una lista con el formato "Jugador,Puntos,Rebotes,Asistencias,Robos"
      Crea un CSV
     """
+    print("Generando CSV Bonus...")
     with open(nombre_archivo, "w") as archivo_csv:
         texto_linea = "Jugador,Puntos,Rebotes,Asistencias,Robos"
         archivo_csv.write(texto_linea)
@@ -395,6 +396,7 @@ def generar_bonus_csv(nombre_archivo:str, listado:list):
             texto_linea += ", " + str(jugador[ASISTENCIAS_CSV])
             texto_linea += ", " + str(jugador[ASISTENCIAS_CSV])
             archivo_csv.write(texto_linea)
+    print("Generado CSV Bonus en csv/bonus.csv")
 
 
 def ordenar_ranking_por_criterio(listado:str):    
