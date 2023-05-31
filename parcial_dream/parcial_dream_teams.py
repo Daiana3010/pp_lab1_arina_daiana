@@ -142,7 +142,7 @@ def generar_csv(nombre_archivo:str, jugador):
     with open(nombre_archivo, "w") as archivo_csv:
         texto_linea = "NOMBRE,TEMPORADA,PUNTOS_TOTALES,PROMEDIO_PUNTOS_POR_PARTIDO,REBOTES_TOTALES,PROMEDIO_REBOTES_POR_PARTIDO,ASISTENCIAS_TOTALES,PROMEDIO_ASISTENCIAS_POR_PARTIDO,ROBOS_TOTALES,BLOQUEOS_TOTALES,PORCENTAJE_TIROS_DE_CAMPO,PORCENTAJE_TIROS_LIBRES,PORCENTAJE_TIROS_TRIPLES"
         archivo_csv.write(texto_linea)
-        texto_linea ="\n";
+        texto_linea ="\n"
         texto_linea += jugador[NOMBRE]
         texto_linea += ", " + str(jugador[ESTADISTICAS][ESTADISTICA_TEMPORADA])
         texto_linea += "," +  str(jugador[ESTADISTICAS][ESTADISTICA_PUNTOS_TOTALES])
@@ -384,7 +384,6 @@ def generar_bonus_csv(nombre_archivo:str, listado:list):
     :param listado: una lista con el formato "Jugador,Puntos,Rebotes,Asistencias,Robos"
      Crea un CSV
     """
-    print("Generando CSV Bonus...")
     with open(nombre_archivo, "w") as archivo_csv:
         texto_linea = "Jugador,Puntos,Rebotes,Asistencias,Robos"
         archivo_csv.write(texto_linea)
@@ -396,7 +395,6 @@ def generar_bonus_csv(nombre_archivo:str, listado:list):
             texto_linea += ", " + str(jugador[ASISTENCIAS_CSV])
             texto_linea += ", " + str(jugador[ASISTENCIAS_CSV])
             archivo_csv.write(texto_linea)
-    print("Generado CSV Bonus en csv/bonus.csv")
 
 
 def ordenar_ranking_por_criterio(listado:str):    
@@ -445,12 +443,111 @@ def bonus(listado:list):
     return lista_ordenada
 
 #FIN FUNCIONES *******
+# 21 Determinar la cantidad de jugadores que hay por cada posición.
+# Ejemplo:
+# Base: 2
+# Alero: 3
+
+def agrupa_jugador_por_posicion(listado:list):
+    """
+     Esta función toma una lista de jugadores e agrupa a los jugadores por su posicion   
+    :param listado: El parametro es un lista que representa a los jugadores    
+    """
+    nuevo_listado = []
+    posiciones = ["Escolta","Base","Ala-Pivot","Alero","Pivot"]
+    for posicion in posiciones:
+        contador = 0
+        for item in listado:
+            if item[POSICION] == posicion:
+                contador = contador + 1
+        nuevo_listado.append({"posicion": posicion, "cantidad": contador})
+    for item in nuevo_listado:
+        
+        print(" Posición :" + item["posicion"] + " " + "Cantidad :" + str(item["cantidad"]))
+
+# Mostrar la lista de jugadores ordenadas por la cantidad de All-Star de forma descendente. 
+# La salida por pantalla debe tener un formato similar a este:
+# Michael Jordan (14 veces All Star)
+# Magic Johnson (12 veces All-Star)
+
+def obtener_jugadores_por_criterio(parametro_nombre):
+    """
+    Muestra e imprime si es/son o no miembro del salon de la fama segun el pparametro_nombre
+    :param parametro_nombre:  texto a buscar contra los nombre de los jugadores
+    """
+    resultados = []    
+    patron = rf"{parametro_nombre.lower()}"    
+    for jugador in lista_jugadores:  
+        for logro in jugador[LOGROS]:      
+            if re.search(patron, logro.lower()):
+                resultados.append(jugador)
+
+    return resultados
+
+def extraer_cantidad_desde_all_star(all_star:str) -> int:
+    cantidad = []
+    for caracter in all_star.split():
+        if (es_numero(caracter)):
+            cantidad.append(int(caracter))        
+    return cantidad
+
+def obtener_jugadores_all_star():
+    jugadores_all_star = obtener_jugadores_por_criterio("all-Star")
+    parametro_nombre = "all-star"
+    patron = rf"{parametro_nombre}" 
+
+    nueva_lista = []
+    for jugador in jugadores_all_star:                    
+            for logro in jugador[LOGROS]:
+                if re.search(patron, logro.lower()):                    
+                    nueva_lista.append({'nombre': jugador[NOMBRE], 'logro': logro, 'cantidad': extraer_cantidad_desde_all_star(logro)})
+    nueva_lista = sorted(nueva_lista, key=lambda x: (x.get("cantidad", 0)), reverse=True)
+    for item in nueva_lista:
+        print(item[NOMBRE] + "(" + item["logro"] + ")")
+
+
+
+# Determinar qué jugador tiene las mejores estadísticas en cada valor. La salida por pantalla debe tener
+# un formato similar a este:
+# Mayor cantidad de temporadas: Karl Malone (19)
+# Mayor cantidad de puntos totales: Karl Malon (36928)
+
+def jugador_con_mejores_estadisticas(listado):
+    print("record maximo temporada" )
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_TEMPORADA)
+    print("record puntos_totales")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PUNTOS_TOTALES)
+    print("record promedio_puntos_por_partido")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PROMEDIO_PUNTOS_POR_PARTIDO)
+    print("record rebotes_totales")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_REBOTES_TOTALES)
+    print("record promedio_rebotes_por_partido")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PROMEDIO_REBOTES_POR_PARTIDO)
+    print("record asistencias_totales")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_ASISTENCIAS_TOTALES)
+    print("record promedio_asistencias_por_partido")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PROMEDIO_ASISTENCIAS_POR_PARTIDO)
+    print("record robos_totales")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_ROBOS_TOTALES)
+    print("record bloqueos_totales")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_BLOQUEOS_TOTALES)
+    print("record porcentaje_tiros_de_campo")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PORCENTAJE_TIROS_DE_CAMPO)
+    print("record porcentaje_tiros_libres")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PORCENTAJE_TIROS_LIBRES)
+    print("record porcentaje_tiros_triples")
+    buscar_jugador_mayor_por_campo(listado, ESTADISTICA_PORCENTAJE_TIROS_TRIPLES)
+
+        
+        
+        
+
 
 
 while True:
     
     print("--------------")
-    respuesta_str = input("1: Muestra jugador y su posicion : \n2 Muestra jugador con su indice y/o imprime csv (Punto 3)  : \n3 Muestra logros de jugadores por criterio nombre (regex) : \n4 Muestra de manera ascendente el promedio de puntos por partido: \n5 muestra si el/los jugadores es/son miembro/s del salon de la fama por criterio nombre (regex)\n6 jugador con mayor cantidad de rebotes: \n7 jugador con mayor porcentaje de tiro de campo: \n8 jugador con mayor cantidad de asistencias totales: \n9 Jugador que promedia mas puntos por partido: \n10 jugador que promedia mas rebotes por partido: \n11 jugador que promedia mayor asistencia por partido: \n12 jugador con mayor cantidad de robos totales: \n13 jugador con mayor cantidad de bloqueos totales: \n14 jugador porcentaje tiros libres superior al ingresado: \n15 muestra promedios por punto de partido, excluyendo al que menor promedio tiene \n16 jugador con mas logros: \n17 jugador con mayor porcentaje de tiros triples: \n18 jugador con mayor cantidad temporadas jugadas \n19 Muestra los jugadores con porcentaje tiros de campo superior a valor ingresado \n20 Bonus \n ****Elija una opcion*** \n")
+    respuesta_str = input("1: Muestra jugador y su posicion : \n2 Muestra jugador con su indice y/o imprime csv (Punto 3)  : \n3 Muestra logros de jugadores por criterio nombre (regex) : \n4 Muestra de manera ascendente el promedio de puntos por partido: \n5 muestra si el/los jugadores es/son miembro/s del salon de la fama por criterio nombre (regex)\n6 jugador con mayor cantidad de rebotes: \n7 jugador con mayor porcentaje de tiro de campo: \n8 jugador con mayor cantidad de asistencias totales: \n9 Jugador que promedia mas puntos por partido: \n10 jugador que promedia mas rebotes por partido: \n11 jugador que promedia mayor asistencia por partido: \n12 jugador con mayor cantidad de robos totales: \n13 jugador con mayor cantidad de bloqueos totales: \n14 jugador porcentaje tiros libres superior al ingresado: \n15 muestra promedios por punto de partido, excluyendo al que menor promedio tiene \n16 jugador con mas logros: \n17 jugador con mayor porcentaje de tiros triples: \n18 jugador con mayor cantidad temporadas jugadas \n19 Muestra los jugadores con porcentaje tiros de campo superior a valor ingresado \n20 Bonus n\n21 Extra 1 \n22 Extra 2 \n23 Extra 3 \n24 Extra 4 \n****Elija una opcion*** \n")
     respuesta_int = int(respuesta_str)
     
     match(respuesta_int):
@@ -534,5 +631,17 @@ while True:
             print_space()
         case 20:
             ruta = "parcial_dream\\csv\\bonus.csv"
+            
             generar_bonus_csv(ruta, bonus(lista_jugadores))
             print_space() 
+        case 21:
+            agrupa_jugador_por_posicion(lista_jugadores)
+        case 22:
+            obtener_jugadores_all_star()
+        case 23:
+            jugador_con_mejores_estadisticas(lista_jugadores)
+       
+        
+        
+        
+        
